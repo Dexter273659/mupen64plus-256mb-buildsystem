@@ -1,0 +1,40 @@
+name: Build Mupen64Plus UWP Core for Xbox
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-xbox-core:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Setup Visual Studio environment
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Build Mupen64Plus UWP core
+      shell: powershell
+      run: |
+        # Adjust solution and project path as needed
+        $solution = 'path\to\mupen64plus.sln'
+        $configuration = 'Release'
+        $platform = 'x64'  # or x86 if needed
+
+        & "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" `
+          $solution `
+          /p:Configuration=$configuration `
+          /p:Platform=$platform `
+          /p:PlatformToolset=v142 `
+          /p:AppxBundle=Never `
+          /verbosity:minimal
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: mupen64plus-xbox-core
+        path: path\to\built\core.dll
